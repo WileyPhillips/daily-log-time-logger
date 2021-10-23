@@ -7,19 +7,43 @@ root = Tk()
 root.geometry("400x400")
 
 currentLog = ""
+lastAddition = ""
+blankEndTime = False
+
+
+def startSequence():
+    global currentTime, currentLog, lastAddition
+    lastAddition = currentTime + " - --:---m: " + myScreen[1].get() + "\n"
+    currentLog += lastAddition
+    myScreen[4].config(text=currentLog)
+
 
 def logCurrent(isStart):
-    global currentLog
+    global currentLog, lastAddition, blankEndTime, currentTime
     time = datetime.now().strftime('%H:%M')
-    print(type(time))
     if int(time[0:2]) > 12:
         currentTime = str(int(time[0:2])-12)+time[2:]+"pm"
     else:
         currentTime = time + "am"
-    print(currentTime)
-    if isStart:
-        currentLog += currentTime + " - --:---m: " + myScreen[1].get() + "\n"
-        myScreen[4].config(text=currentLog)
+    if not blankEndTime:
+        if isStart:
+            blankEndTime = True
+            startSequence()
+            print("False Start")
+    else:
+        if isStart:
+            currentLog = currentLog[:10-len(lastAddition)] + currentTime[:-1] + currentLog[16-len(lastAddition):]
+            myScreen[4].config(text=currentLog)
+            startSequence()
+            print("True Start")
+        else:
+            blankEndTime = False
+            currentLog = currentLog[:10 - len(lastAddition)] + currentTime[:-1] + currentLog[16 - len(lastAddition):]
+            print(currentLog)
+            lastAddition = ""
+            myScreen[4].config(text=currentLog)
+            print("True End")
+
 
 
 root.title("Title")
